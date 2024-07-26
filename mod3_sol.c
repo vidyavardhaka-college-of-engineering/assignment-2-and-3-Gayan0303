@@ -1,61 +1,60 @@
 #include <stdio.h>
-#include <stdlib.h>
-#define M 11 
+#include <stdbool.h>
 
-int h1(int key) 
-{
+#define TABLE_SIZE 11
+
+
+int h1(int key) {
     int x = (key + 7) * (key + 7);
     x = x / 16;
     x = x + key;
-    x = x % M;
+    x = x % TABLE_SIZE;
     return x;
 }
-void linear_probing(int *hash_table, int key)
-{
-    int index = h1(key);
-    int original_index = index;
-    while (hash_table[index] != -1) 
-    {
-        index = (index + 1) % M;
-        if (index == original_index) 
-        {
-            printf("Hash table is full\n");
-            return;
-        }
+
+void insert(int hashTable[], int key) {
+    int homeSlot = h1(key);
+    int currentSlot = homeSlot;
+    while (hashTable[currentSlot] != -1) {
+        currentSlot = (currentSlot + 1) % TABLE_SIZE;
     }
-    hash_table[index] = key;
+    hashTable[currentSlot] = key;
 }
 
-void print_table(int *hash_table) 
-{
-    printf("Slot:");
-    for (int i = 0; i < M; i++) 
-    {
-        printf(" %d", i);
+
+void printHashTable(int hashTable[]) {
+    printf("Final Hash Table:\n");
+    printf("Slot: ");
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        printf("%d ", i);
     }
-    printf("\nContents:");
-    for (int i = 0; i < M; i++) 
-    {
-        if (hash_table[i] != -1)
-            printf(" %d", hash_table[i]);
-        else
-            printf(" -");
+    printf("\n");
+
+    printf("Contents: ");
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        if (hashTable[i] == -1) {
+            printf("- ");
+        } else {
+            printf("%d ", hashTable[i]);
+        }
     }
     printf("\n");
 }
-int main() 
-{
+
+int main() {
+    int hashTable[TABLE_SIZE];
+    for (int i = 0; i < TABLE_SIZE; i++) {
+        hashTable[i] = -1; 
+    }
+
     int keys[] = {43, 23, 1, 0, 15, 31, 4, 7, 11, 3};
-    int hash_table[M];
-    for (int i = 0; i < M; i++) 
-    {
-        hash_table[i] = -1;
+    int numKeys = sizeof(keys) / sizeof(keys[0]);
+
+    for (int i = 0; i < numKeys; i++) {
+        insert(hashTable, keys[i]);
     }
-    
-    for (int i = 0; i < sizeof(keys)/sizeof(keys[0]); i++)
-    {
-        linear_probing(hash_table, keys[i]);
-    }
-    print_table(hash_table);
+
+    printHashTable(hashTable);
+
     return 0;
 }
